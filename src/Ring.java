@@ -49,7 +49,14 @@ public class Ring {
 			System.err.println("Error : " + e);
 		}
 		try {
-			nodes.get(2).send(nodes.get(2).getId(), 4, new ArrayList<Integer>(), "Hello");
+			System.out.println(" - - - - - - - - - - ");
+			nodes.get(0).send(3, "Hello1");
+			Thread.sleep(3000);
+			System.out.println(" - - - - - - - - - - ");
+			nodes.get(2).send(4, "Hello2");
+			Thread.sleep(3000);
+			System.out.println(" - - - - - - - - - - ");
+			nodes.get(2).send(4, "Hello3");
 		} catch (Exception e) {
 			System.err.println("Error : " + e);
 		}

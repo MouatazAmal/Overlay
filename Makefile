@@ -11,7 +11,7 @@ Ring: $(OBJ)
 
 $(BUILDPATH)/Ring.class : $(BUILDPATH)/Node.class
 
-$(BUILDPATH)/Node.class : $(BUILDPATH)/NodeItf.class
+$(BUILDPATH)/Node.class : $(BUILDPATH)/NodeItf.class $(BUILDPATH)/Ack.class
 
 $(BUILDPATH)/%.class: src/%.java
 	$(CC) -d $(BUILDPATH) -cp $(BUILDPATH) $<
