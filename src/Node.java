@@ -16,9 +16,6 @@ public class Node implements NodeItf {
 	public void send(int idTarget, String message) throws RemoteException {
 		if (idTarget == id) {
 			System.out.println("Node" + id + " received : " + message);
-			/*for (int i = 0 ; i < idsFrom.size() ; i++){
-				System.out.println(idsFrom.get(i));
-			}*/
 		} else {
 			ArrayList<Integer> idsFrom = new ArrayList<Integer>();
 			idsFrom.add(id);
@@ -49,9 +46,6 @@ public class Node implements NodeItf {
 					neighbours.get(i).acknowledge(newAck, idsAckFrom);
 				}
 			}
-			/*for (int i = 0 ; i < idsFrom.size() ; i++){
-				System.out.println(idsFrom.get(i));
-			}*/
 		} else {
 			idsFrom.add(id);
 			ackList.add(new Ack(false, idMessage));
@@ -92,26 +86,30 @@ public class Node implements NodeItf {
 	}
 
 	public void acknowledge(Ack ack, ArrayList<Integer> idsFrom) throws RemoteException {
+		boolean alreadyFollowed = false;
 		for (int i = 0 ; i < ackList.size() ; i++) {
 			if (ackList.get(i).idMessage == ack.idMessage) {
+				alreadyFollowed = ackList.get(i).acknowledged;
 				ackList.get(i).acknowledged = true;
 			}
 		}
-		System.out.println("Ack from Node" + idsFrom.get(0) + " received by Node" + id);
-		idsFrom.add(id);
-		int j;
-		boolean dontFollow;
-		for (int i = 0 ; i < neighbours.size() ; i++) {
-			j = 0;
-			dontFollow = false;
-			while (j < idsFrom.size() && !dontFollow) {
-				if (neighbours.get(i).getId() == idsFrom.get(j)){
-					dontFollow = true;
+		if (!alreadyFollowed) {
+			System.out.println("Ack from Node" + idsFrom.get(0) + " received by Node" + id);
+			idsFrom.add(id);
+			int j;
+			boolean dontFollow;
+			for (int i = 0 ; i < neighbours.size() ; i++) {
+				j = 0;
+				dontFollow = false;
+				while (j < idsFrom.size() && !dontFollow) {
+					if (neighbours.get(i).getId() == idsFrom.get(j)){
+						dontFollow = true;
+					}
+					j++;
 				}
-				j++;
-			}
-			if(!dontFollow){
-				neighbours.get(i).acknowledge(ack, idsFrom);
+				if(!dontFollow){
+					neighbours.get(i).acknowledge(ack, idsFrom);
+				}
 			}
 		}
 	}

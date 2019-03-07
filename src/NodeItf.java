@@ -1,6 +1,5 @@
 import java.rmi.*;
 import java.util.ArrayList;
-import java.rmi.*;
 
 public interface NodeItf extends Remote {
 	public void send(int idTarget, String message) throws RemoteException;
