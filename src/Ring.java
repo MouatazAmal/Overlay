@@ -21,7 +21,7 @@ public class Ring {
 			nodes = new ArrayList<NodeItf>();
 			//Creation des nodes
 			for (int i = 1 ; i <= nbNodes ; i++) {
-				Node n = new Node(i);
+				Node n = new Node(i, nbNodes);
 				NodeItf n_stub = (NodeItf) UnicastRemoteObject.exportObject(n, 0);
 
 				nodes.add(n_stub);
@@ -50,13 +50,17 @@ public class Ring {
 		}
 		try {
 			System.out.println(" - - - - - - - - - - ");
-			nodes.get(0).send(3, "Hello1");
-			Thread.sleep(3000);
-			System.out.println(" - - - - - - - - - - ");
-			nodes.get(2).send(4, "Hello2");
-			Thread.sleep(3000);
-			System.out.println(" - - - - - - - - - - ");
-			nodes.get(2).send(4, "Hello3");
+			for (int i = 0 ; i < nbNodes ; i++) {
+				nodes.get(i).setup();
+			}
+			
+			for (int i = 0 ; i < nbNodes ; i++) {
+				System.out.println(" - - - - - - - - - - ");
+				for (int j = 0 ; j < nodes.get(i).getNodeToTransfer().size() ; j++) {
+					System.out.print(" " + nodes.get(i).getNodeToTransfer().get(nodes.get(j).getId()));
+				}
+				System.out.print("\n");
+			}
 		} catch (Exception e) {
 			System.err.println("Error : " + e);
 		}

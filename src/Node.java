@@ -1,74 +1,61 @@
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.rmi.*;
 import java.lang.Math;
 
 public class Node implements NodeItf {
 	private int id;
 	private ArrayList<NodeItf> neighbours;
+	private Hashtable<Integer, Integer> nodeToTransfer;
+	private Hashtable<Integer, Integer> sizeToTransfer;
 	private ArrayList<Ack> ackList;
 
-	public Node (int id){
+	public Node (int id, int nbNodes){
 		this.id = id;
 		neighbours = new ArrayList<NodeItf>();
+		nodeToTransfer = new Hashtable<Integer, Integer>();
+		sizeToTransfer = new Hashtable<Integer, Integer>();
 		ackList = new ArrayList<Ack>();
+	}
+
+	public void setup() throws RemoteException {
+		nodeToTransfer.put(id, id);
+		sizeToTransfer.put(id, 0);
+		ArrayList<Integer> nodesFrom = new ArrayList<Integer>();
+		nodesFrom.add(id);
+		for (int i = 0 ; i < neighbours.size() ; i++) {
+			neighbours.get(i).setupSend(id, nodesFrom);
+		}
+	}
+
+	public void setupSend(int idSender, ArrayList<Integer> idsFrom) throws RemoteException {
+		if (!nodeToTransfer.containsKey(idSender)){
+			nodeToTransfer.put(idSender, idsFrom.get(idsFrom.size()-1));
+			sizeToTransfer.put(idSender, idsFrom.size());
+			idsFrom.add(id);
+			for (int i = 0 ; i < neighbours.size() ; i++) {
+				neighbours.get(i).setupSend(idSender, idsFrom);
+			}
+		} else {
+			if (sizeToTransfer.get(idSender) > idsFrom.size()){
+				sizeToTransfer.replace(idSender, idsFrom.size());
+				nodeToTransfer.replace(idSender, idsFrom.get(idsFrom.size()-1));
+			}
+		}
 	}
 
 	public void send(int idTarget, String message) throws RemoteException {
 		if (idTarget == id) {
 			System.out.println("Node" + id + " received : " + message);
 		} else {
-			ArrayList<Integer> idsFrom = new ArrayList<Integer>();
-			idsFrom.add(id);
-			long idMessage = (long) (Math.random() * Long.MAX_VALUE);
-			ackList.add(new Ack (false, idMessage));
-			for (int i = 0 ; i < neighbours.size() ; i++) {
-				System.out.println("Followed by Node" + id + " to Node" + neighbours.get(i).getId());
-				neighbours.get(i).follow(id, idTarget, idsFrom, message, idMessage);	
-			}
-		}
-	}
-
-	public void follow(int idSender, int idTarget, ArrayList<Integer> idsFrom, String message, long idMessage) throws RemoteException {
-		if (idTarget == id) {
-			boolean alreadyReceived = false;
-			for (int k = 0 ; k < ackList.size() ; k++) {
-				if (ackList.get(k).idMessage == idMessage) {
-					alreadyReceived = true;
+			int i = 0;
+			boolean notFound = true;
+			while (i < neighbours.size() && notFound) {
+				if (neighbours.get(i).getId() == nodeToTransfer.get(idTarget)) {
+					neighbours.get(i).send(idTarget, message);
+					notFound = false;
 				}
-			}
-			if (!alreadyReceived) {
-				System.out.println("Node" + id + " received from Node" + idSender + " : " + message);
-				Ack newAck = new Ack(true, idMessage);
-				ackList.add(newAck);
-				ArrayList<Integer> idsAckFrom = new ArrayList<Integer>();
-				idsAckFrom.add(id);
-				for (int i = 0 ; i < neighbours.size() ; i++){
-					neighbours.get(i).acknowledge(newAck, idsAckFrom);
-				}
-			}
-		} else {
-			idsFrom.add(id);
-			ackList.add(new Ack(false, idMessage));
-			int j;
-			boolean dontFollow;
-			for (int i = 0 ; i < neighbours.size() ; i++) {
-				j = 0;
-				dontFollow = false;
-				while (j < idsFrom.size() && !dontFollow) {
-					if (neighbours.get(i).getId() == idsFrom.get(j)){
-						dontFollow = true;
-					}
-					j++;
-				}
-				for (int k = 0 ; k < ackList.size() ; k++) {
-					if (ackList.get(k).idMessage == idMessage) {
-						dontFollow = ackList.get(k).acknowledged || dontFollow;
-					}
-				}
-				if(!dontFollow){
-					System.out.println("Followed by Node" + id + " to Node" + neighbours.get(i).getId());
-					neighbours.get(i).follow(idSender, idTarget, idsFrom, message, idMessage);
-				}
+				i++;
 			}
 		}
 	}
@@ -85,32 +72,7 @@ public class Node implements NodeItf {
 		return neighbours;
 	}
 
-	public void acknowledge(Ack ack, ArrayList<Integer> idsFrom) throws RemoteException {
-		boolean alreadyFollowed = false;
-		for (int i = 0 ; i < ackList.size() ; i++) {
-			if (ackList.get(i).idMessage == ack.idMessage) {
-				alreadyFollowed = ackList.get(i).acknowledged;
-				ackList.get(i).acknowledged = true;
-			}
-		}
-		if (!alreadyFollowed) {
-			System.out.println("Ack from Node" + idsFrom.get(0) + " received by Node" + id);
-			idsFrom.add(id);
-			int j;
-			boolean dontFollow;
-			for (int i = 0 ; i < neighbours.size() ; i++) {
-				j = 0;
-				dontFollow = false;
-				while (j < idsFrom.size() && !dontFollow) {
-					if (neighbours.get(i).getId() == idsFrom.get(j)){
-						dontFollow = true;
-					}
-					j++;
-				}
-				if(!dontFollow){
-					neighbours.get(i).acknowledge(ack, idsFrom);
-				}
-			}
-		}
+	public Hashtable<Integer, Integer> getNodeToTransfer() throws RemoteException {
+		return nodeToTransfer;
 	}
 }
