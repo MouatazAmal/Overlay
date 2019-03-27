@@ -8,6 +8,7 @@ public class Ring {
 
 	private static int nbNodes;
 	private static ArrayList<NodeItf> nodes;
+	private static ArrayList<VNodeItf> vNodes;
 
 	public static void main (String[] args){
 		if (args.length < 1) {
@@ -21,7 +22,7 @@ public class Ring {
 			nodes = new ArrayList<NodeItf>();
 			//Creation des nodes
 			for (int i = 1 ; i <= nbNodes ; i++) {
-				Node n = new Node(i, nbNodes);
+				Node n = new Node(i);
 				NodeItf n_stub = (NodeItf) UnicastRemoteObject.exportObject(n, 0);
 
 				nodes.add(n_stub);
@@ -50,19 +51,26 @@ public class Ring {
 		}
 		try {
 			System.out.println(" - - - - - - - - - - ");
-			for (int i = 0 ; i < nbNodes ; i++) {
-				nodes.get(i).setup();
-			}
 			
-			for (int i = 0 ; i < nbNodes ; i++) {
+			nodes.get(0).setup();
+			
+			
+			/*for (int i = 0 ; i < nbNodes ; i++) {
 				System.out.println(" - - - - - - - - - - ");
 				for (int j = 0 ; j < nodes.get(i).getNodeToTransfer().size() ; j++) {
 					System.out.print(" " + nodes.get(i).getNodeToTransfer().get(nodes.get(j).getId()));
 				}
 				System.out.print("\n");
-			}
+			}*/
+
 		} catch (Exception e) {
 			System.err.println("Error : " + e);
+		}
+
+		for (int i = 0 ; i < nbNodes ; i++){
+			/*VNode v = new VNode(i);
+			VNodeItf v_stub = (VNodeItf) UnicastRemoteObject.exportObject(v, 0);
+			vNodes.add(v_stub);*/
 		}
 
 	}

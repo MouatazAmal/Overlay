@@ -19,6 +19,7 @@ public class VNode implements VNodeItf {
 			System.out.println("VNode" + id + " received : " + message);
 		} else {
 			physNode.send(this.right.getPhysNode().getId(),message);
+			right.sendRight(idTarget, message);
 		}
 	}
 
@@ -27,23 +28,6 @@ public class VNode implements VNodeItf {
 			System.out.println("VNode" + id + " received : " + message);
 		} else {
 			physNode.send(this.left.getPhysNode().getId(),message);
-		}
-	}
-
-	public void vFollowRight(int idSender, int idTarget, String message) throws RemoteException {
-		if (idTarget == id) {
-			System.out.println("VNode" + id + " received from VNode" + idSender + " : " + message);
-		} else {
-			//physNode.follow()
-			right.vFollowRight(id, idTarget, message);
-		}
-	}
-
-	public void vFollowLeft(int idSender, int idTarget, String message) throws RemoteException {
-		if (idTarget == id) {
-			System.out.println("VNode" + id + " received from VNode" + idSender + " : " + message);
-		} else {
-			left.vFollowLeft(id, idTarget, message);
 		}
 	}
 
