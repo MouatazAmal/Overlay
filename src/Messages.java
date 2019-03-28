@@ -9,12 +9,11 @@ public class Messages extends Observable {
     }
 
     public ArrayList<String> getArchives() {
+
+
         return archives;
     }
 
-    public void setArchives(ArrayList<String> archives) {
-        this.archives = archives;
-    }
 
     public void addMessage(String msg){
         this.archives.add(msg);

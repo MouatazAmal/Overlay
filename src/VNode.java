@@ -1,4 +1,3 @@
-import javafx.collections.ObservableList;
 
 import java.rmi.*;
 import java.util.Observable;
@@ -11,6 +10,8 @@ public class VNode implements VNodeItf, Observer {
 	private VNodeItf right;
 	private VNodeItf left;
 	private  Messages messages;
+
+
 	public VNode (int id, Node physNode) {
 		this.id = id;
 		this.physNode = physNode;
