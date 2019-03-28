@@ -12,8 +12,9 @@ public interface NodeItf extends Remote {
 	public void sendNew(int idSender) throws RemoteException;
 	public void sendSon(int idSender) throws RemoteException;
 	public void sendAck(int idSender) throws RemoteException;
-	public void sendDone(int idSender) throws RemoteException;
+	public void sendDone(int idSender, ArrayList<Integer> idsReachable) throws RemoteException;
 	public void sendEnd(int idSender) throws RemoteException;
 	public boolean getEnd() throws RemoteException;
+	public void reset() throws RemoteException;
 	public Hashtable<Integer, Integer> getNodeToTransfer() throws RemoteException;
 }

@@ -38,22 +38,25 @@ public class Ring {
 			}
 
 			//Affichage voisins
-			for (int i = 0 ; i < nbNodes ; i++){
+			/*for (int i = 0 ; i < nbNodes ; i++){
 				System.out.println("Node : " + (i+1));
 				System.out.println("Neighbours : ");
 				for (int j = 0 ; j < nodes.get(i).getNeighbours().size() ; j++) {
 					System.out.println(nodes.get(i).getNeighbours().get(j).getId() + " ");
 				}
-			}
+			}*/
 			sc.close();
 		} catch (Exception e) {
 			System.err.println("Error : " + e);
 		}
 		try {
 			System.out.println(" - - - - - - - - - - ");
-			
-			nodes.get(0).setup();
-			
+			for (int i = 0 ; i < nbNodes ; i++) {
+				nodes.get(i).setup();
+				for (int j = 0 ; j < nbNodes ; j++) {
+					nodes.get(j).reset();
+				}	
+			}
 			
 			/*for (int i = 0 ; i < nbNodes ; i++) {
 				System.out.println(" - - - - - - - - - - ");

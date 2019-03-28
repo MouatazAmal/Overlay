@@ -8,6 +8,8 @@ public class Node implements NodeItf {
 	private ArrayList<NodeItf> neighbours;
 	private int fatherId;
 	private ArrayList<Integer> sons;
+	private ArrayList<Integer> idsReachable;
+	private Hashtable<Integer, Integer> nodeToTransfer;
 	private boolean end;
 	private boolean firstNew;
 	private int messagesSent;
@@ -20,6 +22,8 @@ public class Node implements NodeItf {
 		neighbours = new ArrayList<NodeItf>();
 		fatherId = -1;
 		sons = new ArrayList<Integer>();
+		idsReachable = new ArrayList<Integer>();
+		nodeToTransfer = new Hashtable<Integer, Integer>();
 		end = false;
 		firstNew = true;
 		messagesSent = 0;
@@ -30,51 +34,74 @@ public class Node implements NodeItf {
 
 	public void setup() throws RemoteException {
 		int d = 0;
+		fatherId = id;
+		nodeToTransfer.put(id, id);
 		while (!end) {
 			if (d == 0) {
 				sendStart(id, d);
-				try {
+				/*try {
 					Thread.sleep(1000);
 				} catch (Exception e) {
 					System.err.println(e);
-				}
+				}*/
 			} else {
 				for (int i = 0 ; i < neighbours.size() ; i++) {
-					neighbours.get(i).sendStart(id, d-1);
+					if (!neighbours.get(i).getEnd()){
+						neighbours.get(i).sendStart(id, d-1);
+						messagesSent++;
+					}
 				}
-				try {
+				receive();
+				/*try {
 					Thread.sleep(1000);
 				} catch (Exception e) {
 					System.err.println(e);
-				}
+				}*/
 			}
 			d++;
 		}
+		System.out.println("\nSetup Node" + id + " done");
+		System.out.print("Keys " + id + " : ");
+		System.out.print(nodeToTransfer.keySet());
+		
+		System.out.print("\nValues : ");
+		System.out.print(nodeToTransfer.values());
 	}
 
 	public void sendStart(int idSender, int depth) throws RemoteException {
-		System.out.println("START received by " + id + " from " + idSender);
+		//System.out.println("START received by " + id + " from " + idSender);
 		if (depth == 0 && !end) {
 			for (int i = 0 ; i < neighbours.size() ; i++) {
-				if (neighbours.get(i).getId() != fatherId) {
+				if (neighbours.get(i).getId() != fatherId && !neighbours.get(i).getEnd()) {
 					neighbours.get(i).sendNew(id);
 					messagesSent++;
 				}
 			}
-			receive();
-		} else if (!end) {
-			for (int i = 0 ; i < neighbours.size() ; i++) {
-				if (neighbours.get(i).getId() != fatherId && !neighbours.get(i).getEnd()) {
-					neighbours.get(i).sendStart(id, depth-1);
-					messagesSent++;
+			if (messagesSent != 0) {
+				receive();
+			} else {
+				for (int i = 0 ; i < neighbours.size() ; i++) {
+					if (neighbours.get(i).getId() == fatherId) {
+						neighbours.get(i).sendEnd(id);
+						end = true;
+					}
 				}
 			}
-			receiveDoneEnd();
+		} else if (!end) {
+			for (int h = 0 ; h < sons.size() ; h++) {
+				for (int i = 0 ; i < neighbours.size() ; i++) {
+					if (neighbours.get(i).getId() != fatherId && !neighbours.get(i).getEnd() && neighbours.get(i).getId() == sons.get(h)) {
+						neighbours.get(i).sendStart(id, depth-1);
+						messagesSent++;
+					}
+				}
+			}
+			receive();
 		}
 	}
 
 	public void sendNew(int idSender) throws RemoteException {
-		System.out.println("NEW received by " + id + " from " + idSender);
+		//System.out.println("NEW received by " + id + " from " + idSender);
 		if (firstNew) {
 			fatherId = idSender;
 			for (int i = 0 ; i < neighbours.size() ; i++) {
@@ -94,30 +121,38 @@ public class Node implements NodeItf {
 	}
 
 	public void sendSon(int idSender) throws RemoteException {
-		System.out.println("SON received by " + id + " from " + idSender);
+		//System.out.println("SON received by " + id + " from " + idSender);
 		messagesReceived++;
 		sons.add(idSender);
+		nodeToTransfer.put(idSender, idSender);
+		idsReachable.add(idSender);
 	}
 
 	public void sendAck(int idSender) throws RemoteException {
-		System.out.println("ACK received by " + id + " from " + idSender);
+		//System.out.println("ACK received by " + id + " from " + idSender);
 		messagesReceived++;
 		ackReceived++;
 	}
 
-	public void sendDone(int idSender) throws RemoteException {
-		System.out.println("DONE received by " + id + " from " + idSender);
+	public void sendDone(int idSender, ArrayList<Integer> idsReachable) throws RemoteException {
+		//System.out.println("DONE received by " + id + " from " + idSender);
 		messagesReceived++;
+		for (int i = 0 ; i < idsReachable.size() ; i ++) {
+			if (!this.idsReachable.contains(idsReachable.get(i))) {
+				this.idsReachable.add(idsReachable.get(i));
+			}
+			nodeToTransfer.put(idsReachable.get(i), idSender);
+		}
 	}
 
 	public void sendEnd(int idSender) throws RemoteException {
-		System.out.println("END received by " + id + " from " + idSender);
+		//System.out.println("END received by " + id + " from " + idSender);
 		endReceived++;
 		messagesReceived++;
 	}
 
 	public void receive() throws RemoteException {
-		while (messagesSent != messagesReceived){
+		while (messagesSent != messagesReceived || messagesReceived == 0){
 				System.out.println("Receive waiting..." + id + " MS : " + messagesSent + " MR : " + messagesReceived);
 				try {
 					Thread.sleep(1000);
@@ -125,59 +160,46 @@ public class Node implements NodeItf {
 					System.err.println(e);
 				}
 			}
-			if (messagesReceived == ackReceived){
-				for (int i = 0 ; i < neighbours.size() ; i++) {
-					if (neighbours.get(i).getId() == fatherId){
-						neighbours.get(i).sendEnd(id);
-						end = true;
+			if (messagesReceived == ackReceived || messagesReceived == endReceived){
+				if (id != fatherId) {
+					for (int i = 0 ; i < neighbours.size() ; i++) {
+						if (neighbours.get(i).getId() == fatherId){
+							neighbours.get(i).sendEnd(id);
+						}
 					}
-				}
+				}				
+				end = true;
 			} else {
 				for (int i = 0 ; i < neighbours.size() ; i++) {
 					if (neighbours.get(i).getId() == fatherId){
-						neighbours.get(i).sendDone(id);
+						neighbours.get(i).sendDone(id, idsReachable);
 					}
 				}
 			}
 			messagesSent = 0;
 			messagesReceived = 0;
+			endReceived = 0;
 			ackReceived = 0;
-	}
-
-	public void receiveDoneEnd() throws RemoteException {
-		while (messagesSent != messagesReceived) {
-			System.out.println("ReceiveEnd waiting..." + id + " MS : " + messagesSent + " MR : " + messagesReceived);
-			try {
-					Thread.sleep(1000);
-				} catch (Exception e) {
-					System.err.println(e);
-				}
-		}
-		if (messagesReceived == endReceived){
-			for (int i = 0 ; i < neighbours.size() ; i++) {
-				if (neighbours.get(i).getId() == fatherId){
-					neighbours.get(i).sendEnd(id);
-					end = true;
-				}
-			}
-		} else {
-			for (int i = 0 ; i < neighbours.size() ; i++) {
-				if (neighbours.get(i).getId() == fatherId){
-					neighbours.get(i).sendDone(id);
-				}
-			}
-		}
-		messagesSent = 0;
-		messagesReceived = 0;
-		endReceived = 0;
 	}
 
 	public boolean getEnd() throws RemoteException {
 		return end;
 	}
 
+	public void reset() throws RemoteException {
+		this.end = false;
+		this.firstNew = true;
+		this.messagesSent = 0;
+		this.messagesReceived = 0;
+		this.ackReceived = 0;
+		this.endReceived = 0;
+		this.fatherId = -1;
+		this.sons.clear();
+		this.idsReachable.clear();
+	}
+
 	public void send(int idTarget, String message) throws RemoteException {
-		/*if (idTarget == id) {
+		if (idTarget == id) {
 			System.out.println("Node" + id + " received : " + message);
 		} else {
 			int i = 0;
@@ -190,7 +212,7 @@ public class Node implements NodeItf {
 				}
 				i++;
 			}
-		}*/
+		}
 	}
 
 	public void addNeighbour(NodeItf neighbour) throws RemoteException {
@@ -206,6 +228,6 @@ public class Node implements NodeItf {
 	}
 
 	public Hashtable<Integer, Integer> getNodeToTransfer() throws RemoteException {
-		return null;//nodeToTransfer;
+		return nodeToTransfer;
 	}
 }
