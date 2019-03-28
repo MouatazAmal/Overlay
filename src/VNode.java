@@ -12,7 +12,7 @@ public class VNode implements VNodeItf, Observer {
 	private  Messages messages;
 
 
-	public VNode (int id, Node physNode) {
+	public VNode (int id, NodeItf physNode) {
 		this.id = id;
 		this.physNode = physNode;
         this.right = null;
@@ -22,7 +22,7 @@ public class VNode implements VNodeItf, Observer {
 
 	}
 
-	public void setup(VNodeItf right,VNodeItf left){
+	public void setupNeighbours(VNodeItf right,VNodeItf left){
 		this.right = right;
 		this.left = left;
 	}
@@ -66,12 +66,12 @@ public class VNode implements VNodeItf, Observer {
 		return physNode;
 	}
 
-	public Messages getMessages() {
+	public Messages getMessages()throws RemoteException {
 		return messages;
 	}
 
 	@Override
-	public void update(Observable o, Object arg) {
+	public void update(Observable o, Object arg)   {
 		System.out.println("i get the message " + this.messages.getRecentMessage());
 	}
 }
