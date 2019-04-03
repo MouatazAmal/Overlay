@@ -7,7 +7,7 @@ public class VirtualNetwork {
     private int networkSize;
 
     public VirtualNetwork(ArrayList<NodeItf> physicalNodes) {
-        this.nodes = null;
+        this.nodes = new ArrayList<>();
         this.setup(physicalNodes);
         this.networkSize = this.nodes.size();
 
@@ -19,6 +19,7 @@ public class VirtualNetwork {
         int nodesID = 1;
         for (NodeItf n : physicalNodes){
             this.nodes.add(new VNode(nodesID,n));
+            nodesID++;
         }
 
         // Setting up Neighbours

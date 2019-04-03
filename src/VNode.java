@@ -33,7 +33,7 @@ public class VNode implements VNodeItf, Observer {
 		if (idTarget == id) {
 			System.out.println("VNode" + id + " received : " + message);
 		} else {
-			physNode.send(this.right.getPhysNode().getId(),message);
+			physNode.send(idTarget,message);
 		}
 	}
 
@@ -71,7 +71,35 @@ public class VNode implements VNodeItf, Observer {
 	}
 
 	@Override
-	public void update(Observable o, Object arg)   {
-		System.out.println("i get the message " + this.messages.getRecentMessage());
+	public void update(Observable o, Object arg) {
+		/*
+		Un message est constitué de trois partie séparé d'un | :
+			+ Virtual ID de l'émetteur
+			+ Physical ID du recepteur
+			+ Le contenu du message
+		 */
+		String[] messageFromPhysicalNode = this.messages.getRecentMessage().split("|");
+		int sourceVirtualID = Integer.parseInt(messageFromPhysicalNode[0]);
+		int destinationPhysicalID = Integer.parseInt(messageFromPhysicalNode[1]);
+		String msg = messageFromPhysicalNode[0];
+
+		try {
+			if (this.id == sourceVirtualID )
+				throw new Exception("Virtual Node not found");
+			else if (this.physNode.getId() != destinationPhysicalID)
+			{
+				sendRight(this.right.getId(),this.messages.getRecentMessage());
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+
+	}
+
+
+	public int getId() {
+		return id;
 	}
 }
