@@ -39,11 +39,6 @@ public class Node implements NodeItf {
 		while (!end) {
 			if (d == 0) {
 				sendStart(id, d);
-				/*try {
-					Thread.sleep(1000);
-				} catch (Exception e) {
-					System.err.println(e);
-				}*/
 			} else {
 				for (int i = 0 ; i < neighbours.size() ; i++) {
 					if (!neighbours.get(i).getEnd()){
@@ -52,11 +47,6 @@ public class Node implements NodeItf {
 					}
 				}
 				receive();
-				/*try {
-					Thread.sleep(1000);
-				} catch (Exception e) {
-					System.err.println(e);
-				}*/
 			}
 			d++;
 		}
