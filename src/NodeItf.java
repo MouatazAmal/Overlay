@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 public interface NodeItf extends Remote {
-	public void send(int idTarget, String message) throws RemoteException;
+	public void send(int pIdTarget, String message) throws RemoteException;
 	public void addNeighbour(NodeItf neighbour) throws RemoteException;
 	public int getId() throws RemoteException;
 	public ArrayList<NodeItf> getNeighbours() throws RemoteException;

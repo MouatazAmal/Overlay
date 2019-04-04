@@ -7,7 +7,8 @@ import java.rmi.registry.*;
 public class Ring {
 
 	private static int nbNodes;
-	private static ArrayList<NodeItf> nodes;
+	private static ArrayList<Node> nodes;
+	private static ArrayList<NodeItf> nodesItf;
 	private static ArrayList<VNodeItf> vNodes;
 
 	public static void main (String[] args){
@@ -19,20 +20,23 @@ public class Ring {
 		try {
 			Scanner sc = new Scanner(input);
 			nbNodes = sc.nextInt();
-			nodes = new ArrayList<NodeItf>();
+			nodesItf = new ArrayList<NodeItf>();
+			nodes = new ArrayList<Node>();
 			//Creation des nodes
 			for (int i = 1 ; i <= nbNodes ; i++) {
 				Node n = new Node(i);
+				nodes.add(n);
+
 				NodeItf n_stub = (NodeItf) UnicastRemoteObject.exportObject(n, 0);
 
-				nodes.add(n_stub);
+				nodesItf.add(n_stub);
 			}
 			//Attribution des neighbours
 			for (int i = 1 ; i <= nbNodes ; i++) {
 				sc.next();
 				for (int j = 0 ; j < nbNodes ; j++) {
 					if (sc.nextInt() == 1) {
-						nodes.get(i-1).addNeighbour(nodes.get(j));
+						nodesItf.get(i-1).addNeighbour(nodesItf.get(j));
 					}
 				}
 			}
@@ -41,8 +45,8 @@ public class Ring {
 			/*for (int i = 0 ; i < nbNodes ; i++){
 				System.out.println("Node : " + (i+1));
 				System.out.println("Neighbours : ");
-				for (int j = 0 ; j < nodes.get(i).getNeighbours().size() ; j++) {
-					System.out.println(nodes.get(i).getNeighbours().get(j).getId() + " ");
+				for (int j = 0 ; j < nodesItf.get(i).getNeighbours().size() ; j++) {
+					System.out.println(nodesItf.get(i).getNeighbours().get(j).getId() + " ");
 				}
 			}*/
 			sc.close();
@@ -52,16 +56,19 @@ public class Ring {
 		try {
 			System.out.println(" - - - - - - - - - - ");
 			for (int i = 0 ; i < nbNodes ; i++) {
-				nodes.get(i).setup();
+				nodesItf.get(i).setup();
 				for (int j = 0 ; j < nbNodes ; j++) {
-					nodes.get(j).reset();
+					nodesItf.get(j).reset();
 				}	
 			}
+
+			VirtualNetwork vn = new VirtualNetwork(nodes);
+			vn.getNodes().get(0).firstSend(8, "Bonjour");
 			
 			/*for (int i = 0 ; i < nbNodes ; i++) {
 				System.out.println(" - - - - - - - - - - ");
-				for (int j = 0 ; j < nodes.get(i).getNodeToTransfer().size() ; j++) {
-					System.out.print(" " + nodes.get(i).getNodeToTransfer().get(nodes.get(j).getId()));
+				for (int j = 0 ; j < nodesItf.get(i).getNodeToTransfer().size() ; j++) {
+					System.out.print(" " + nodesItf.get(i).getNodeToTransfer().get(nodesItf.get(j).getId()));
 				}
 				System.out.print("\n");
 			}*/

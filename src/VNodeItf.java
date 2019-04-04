@@ -2,7 +2,8 @@ import java.rmi.*;
 import java.util.Observable;
 
 public interface VNodeItf extends Remote {
-	public void sendRight(int idTarget, String message) throws RemoteException;
+	public void firstSend(int vIdTarget, String message) throws RemoteException;
+	public void sendRight(String message) throws RemoteException;
 	public void sendLeft(int idTarget, String message) throws RemoteException;
 	public void setRight (VNodeItf right) throws RemoteException;
 	public void setLeft (VNodeItf left) throws RemoteException;

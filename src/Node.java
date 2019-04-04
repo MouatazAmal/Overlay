@@ -6,6 +6,7 @@ import java.lang.Math;
 public class Node implements NodeItf {
 	private int id;
 	private ArrayList<NodeItf> neighbours;
+	private Messages messages;
 	private int fatherId;
 	private ArrayList<Integer> sons;
 	private ArrayList<Integer> idsReachable;
@@ -30,6 +31,7 @@ public class Node implements NodeItf {
 		messagesReceived = 0;
 		ackReceived = 0;
 		endReceived = 0;
+		messages = new Messages();
 	}
 
 	public void setup() throws RemoteException {
@@ -188,16 +190,16 @@ public class Node implements NodeItf {
 		this.idsReachable.clear();
 	}
 
-	public void send(int idTarget, String message) throws RemoteException {
-		if (idTarget == id) {
-			System.out.println("Node" + id + " received : " + message);
+	public void send(int pIdTarget, String message) throws RemoteException {
+		if (pIdTarget == id) {
+			messages.addMessage(message);
 		} else {
 			int i = 0;
 			boolean notFound = true;
 			while (i < neighbours.size() && notFound) {
-				if (neighbours.get(i).getId() == nodeToTransfer.get(idTarget)) {
-					System.out.println("Node" + id + " transfered to Node" + neighbours.get(i).getId() + " for Node" + idTarget);
-					neighbours.get(i).send(idTarget, message);
+				if (neighbours.get(i).getId() == nodeToTransfer.get(pIdTarget)) {
+					System.out.println("Node" + id + " transfered to Node" + neighbours.get(i).getId() + " for Node" + pIdTarget);
+					neighbours.get(i).send(pIdTarget, message);
 					notFound = false;
 				}
 				i++;
@@ -219,5 +221,9 @@ public class Node implements NodeItf {
 
 	public Hashtable<Integer, Integer> getNodeToTransfer() throws RemoteException {
 		return nodeToTransfer;
+	}
+
+	public Messages getMessages() {
+		return messages;
 	}
 }

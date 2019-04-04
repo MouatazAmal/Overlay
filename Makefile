@@ -9,11 +9,15 @@ all: $(TARGET)
 
 Ring: $(OBJ)
 
-$(BUILDPATH)/Ring.class : $(BUILDPATH)/Node.class
+$(BUILDPATH)/Ring.class : $(BUILDPATH)/Node.class $(BUILDPATH)/VirtualNetwork.class
 
-$(BUILDPATH)/Node.class : $(BUILDPATH)/NodeItf.class $(BUILDPATH)/Ack.class
+$(BUILDPATH)/Node.class : $(BUILDPATH)/NodeItf.class
 
-$(BUILDPATH)/VNode.class : $(BUILDPATH)/VNodeItf.class
+$(BUILDPATH)/VNode.class : $(BUILDPATH)/VNodeItf.class $(BUILDPATH)/Messages.class $(BUILDPATH)/Node.class
+
+$(BUILDPATH)/VirtualNetwork.class : $(BUILDPATH)/VNode.class
+
+$(BUILDPATH)/VirtualNetworkTest.class : $(BUILDPATH)/VirtualNetwork.class
 
 $(BUILDPATH)/%.class: src/%.java
 	$(CC) -d $(BUILDPATH) -cp $(BUILDPATH) $<

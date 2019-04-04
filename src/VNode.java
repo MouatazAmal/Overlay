@@ -6,18 +6,18 @@ import java.util.Observer;
 public class VNode implements VNodeItf, Observer {
 
     private int id;
-	private NodeItf physNode;
+	private Node physNode;
 	private VNodeItf right;
 	private VNodeItf left;
-	private  Messages messages;
+	private Messages messages;
 
 
-	public VNode (int id, NodeItf physNode) {
+	public VNode (int id, Node physNode) {
 		this.id = id;
 		this.physNode = physNode;
         this.right = null;
         this.left = null;
-        this.messages = new Messages();
+        this.messages = physNode.getMessages();
         this.messages.addObserver(this);
 	}
 
@@ -26,14 +26,20 @@ public class VNode implements VNodeItf, Observer {
 		this.left = left;
 	}
 
-
-
-	public void sendRight(int idTarget, String message) throws RemoteException {
-		if (idTarget == id) {
+	public void firstSend(int vIdTarget, String message) throws RemoteException {
+		if (vIdTarget == id) {
 			System.out.println("VNode" + id + " received : " + message);
 		} else {
-			physNode.send(idTarget,message);
+			try {
+				sendRight(id + "/" + vIdTarget + "/" + message);
+			} catch (Exception e) {
+				System.err.print(e);
+			}
 		}
+	}
+
+	public void sendRight(String message) throws RemoteException {
+			physNode.send(right.getPhysNode().getId(), message);
 	}
 
 	public void sendLeft(int idTarget, String message) throws RemoteException {
@@ -77,24 +83,26 @@ public class VNode implements VNodeItf, Observer {
 			+ Le contenu du message
 			*/
 
-		String[] messageFromPhysicalNode = this.messages.getRecentMessage().split("|");
+		String[] messageFromPhysicalNode = this.messages.getRecentMessage().split("/");
 		int sourceVirtualID = Integer.parseInt(messageFromPhysicalNode[0]);
-		int destinationPhysicalID = Integer.parseInt(messageFromPhysicalNode[1]);
-		String msg = messageFromPhysicalNode[0];
+		int destinationVirtualID = Integer.parseInt(messageFromPhysicalNode[1]);
+		String msg = messageFromPhysicalNode[2];
 
 		try {
 			if (this.id == sourceVirtualID )
 				throw new Exception("Virtual Node not found");
-			else if (this.physNode.getId() != destinationPhysicalID)
+			else if (this.id != destinationVirtualID)
 			{
-				sendRight(this.right.getId(),this.messages.getRecentMessage());
+				System.out.println("VNode " + id + " sends right.");
+				sendRight(messages.getRecentMessage());
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		System.out.println(this.messages.getRecentMessage());
+		if (this.id == destinationVirtualID) {
+			System.out.println("Message received by " + id + " : " + msg);
+		}
 	}
 
 
