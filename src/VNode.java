@@ -19,10 +19,9 @@ public class VNode implements VNodeItf, Observer {
         this.left = null;
         this.messages = new Messages();
         this.messages.addObserver(this);
-
 	}
 
-	public void setupNeighbours(VNodeItf right,VNodeItf left){
+	public void setupNeighbours(VNodeItf right, VNodeItf left){
 		this.right = right;
 		this.left = left;
 	}
@@ -77,7 +76,8 @@ public class VNode implements VNodeItf, Observer {
 			+ Virtual ID de l'émetteur
 			+ Physical ID du recepteur
 			+ Le contenu du message
-		 */
+			*/
+
 		String[] messageFromPhysicalNode = this.messages.getRecentMessage().split("|");
 		int sourceVirtualID = Integer.parseInt(messageFromPhysicalNode[0]);
 		int destinationPhysicalID = Integer.parseInt(messageFromPhysicalNode[1]);
@@ -95,7 +95,7 @@ public class VNode implements VNodeItf, Observer {
 			e.printStackTrace();
 		}
 
-
+		System.out.println(this.messages.getRecentMessage());
 	}
 
 

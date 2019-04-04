@@ -10,8 +10,8 @@ public class VirtualNetwork {
         this.nodes = new ArrayList<>();
         this.setup(physicalNodes);
         this.networkSize = this.nodes.size();
-
     }
+
 
     public void setup(ArrayList<NodeItf> physicalNodes){
         // creating VirtualNodes and assign them to PhysicalNodes
