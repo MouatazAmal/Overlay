@@ -80,7 +80,7 @@ public class VNode implements VNodeItf, Observer {
 		/*
 		Un message est constitué de trois partie séparé d'un | :
 			+ Virtual ID de l'émetteur
-			+ Physical ID du recepteur
+			+ Virtual ID du recepteur
 			+ Le contenu du message
 			*/
 
