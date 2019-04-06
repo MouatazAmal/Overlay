@@ -89,18 +89,16 @@ public class VNode implements VNodeItf, Observer {
 		int destinationVirtualID = Integer.parseInt(messageFromPhysicalNode[1]);
 		String msg = messageFromPhysicalNode[2];
 
-		try {
-			if (this.id == sourceVirtualID )
-				throw new Exception("Virtual Node not found");
-			else if (this.id != destinationVirtualID)
-			{
+		if (this.id == sourceVirtualID )
+			System.out.println("Target Node not found");
+		else if (this.id != destinationVirtualID)
+		{
+			try {
 				sendRight(messages.getRecentMessage());
+			} catch (Exception e) {
+				System.err.println(e);
 			}
-
-		} catch (Exception e) {
-			System.err.println(e);
-		}
-		if (this.id == destinationVirtualID) {
+		} else {
 			System.out.println("Message received by VNode" + id + " : " + msg);
 		}
 	}

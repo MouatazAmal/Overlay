@@ -198,7 +198,7 @@ public class Node implements NodeItf {
 			boolean notFound = true;
 			while (i < neighbours.size() && notFound) {
 				if (neighbours.get(i).getId() == nodeToTransfer.get(pIdTarget)) {
-					System.out.println("Node" + id + " transfered to Node" + neighbours.get(i).getId() + " for Node" + pIdTarget);
+					System.out.println("Node" + id + " transferred to Node" + neighbours.get(i).getId() + " for Node" + pIdTarget);
 					neighbours.get(i).send(pIdTarget, message);
 					notFound = false;
 				}

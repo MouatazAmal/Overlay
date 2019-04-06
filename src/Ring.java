@@ -19,16 +19,31 @@ public class Ring {
 		while (true) {
 			input = inputSc.nextLine();
 			Scanner stringSc = new Scanner(input);
-			String cmd = stringSc.next();
-			sender = stringSc.nextInt();
-			target = stringSc.nextInt();
-			String msg = stringSc.nextLine();
-			if (input.startsWith("send ")) {
+			String cmd = "";
+			String msg = "";
+			try {
+				cmd = stringSc.next();
+				if (cmd.equals("quit")){
+					System.exit(0);
+				}
+				sender = stringSc.nextInt();
+				target = stringSc.nextInt();
+				msg = stringSc.nextLine();
+			} catch (Exception e) {
+				System.err.println("Input format error : send <IdSender> <IdTarget> <Message>");
+				continue;
+			}
+			
+			if (cmd.equals("send") &&  vn.containsVNode(sender)) {
 				try {
 					vn.getNodes().get(sender-1).firstSend(target, msg);
 				} catch (Exception e) {
 					System.err.println(e);
 				}
+			} else if (cmd.equals("send")) {
+				System.out.println("Sender not found.");
+			} else {
+				System.out.println("Command not found. Available command : send <IdSender> <IdTarget> <Message>");
 			}
 		}
 	}

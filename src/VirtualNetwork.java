@@ -49,4 +49,15 @@ public class VirtualNetwork {
     public int getNetworkSize() {
         return networkSize;
     }
+
+    public boolean containsVNode(int vNodeID) {
+        for (VNodeItf vNode : this.nodes){
+            try {
+                if (vNode.getId() == vNodeID) return  true;
+            } catch (Exception e) {
+                System.err.println(e);
+            }
+        }
+    return false;
+}
 }
