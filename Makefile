@@ -10,7 +10,7 @@ all: $(TARGET)
 
 Ring: $(OBJ)
 
-$(BUILDPATH)/Ring.class : $(BUILDPATH)/Node.class $(BUILDPATH)/VirtualNetwork.class
+$(BUILDPATH)/Ring.class : $(BUILDPATH)/Node.class $(BUILDPATH)/VirtualNetwork.class $(BUILDPATH)/PhysicalNetwork.class
 
 $(BUILDPATH)/Node.class : $(BUILDPATH)/NodeItf.class
 
@@ -18,7 +18,7 @@ $(BUILDPATH)/VNode.class : $(BUILDPATH)/VNodeItf.class $(BUILDPATH)/Messages.cla
 
 $(BUILDPATH)/VirtualNetwork.class : $(BUILDPATH)/VNode.class
 
-$(BUILDPATH)/VirtualNetworkTest.class : $(BUILDPATH)/VirtualNetwork.class
+$(BUILDPATH)/PhysicalNetwork.class : $(BUILDPATH)/Node.class
 
 $(BUILDPATH)/%.class: src/%.java
 	$(CC) -d $(BUILDPATH) -cp $(BUILDPATH) $<
@@ -27,4 +27,4 @@ clean:
 	rm -rf classes/*.class
 
 run: all
-	java -cp classes Ring $(STRUC)
+	java -cp $(BUILDPATH) Ring $(STRUC)
