@@ -3,6 +3,7 @@ TARGET=Ring
 BUILDPATH=classes
 SRC=$(wildcard src/*.java)
 OBJ=$(patsubst src/%,$(BUILDPATH)/%,$(SRC:.java=.class))
+STRUC=Structure2.txt
 
 
 all: $(TARGET)
@@ -24,3 +25,6 @@ $(BUILDPATH)/%.class: src/%.java
 
 clean:
 	rm -rf classes/*.class
+
+run: all
+	java -cp classes Ring $(STRUC)
