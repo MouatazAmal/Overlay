@@ -39,7 +39,8 @@ public class VNode implements VNodeItf, Observer {
 	}
 
 	public void sendRight(String message) throws RemoteException {
-			physNode.send(right.getPhysNode().getId(), message);
+		System.out.println("VNode " + id + " sends right.");
+		physNode.send(right.getPhysNode().getId(), message);
 	}
 
 	public void sendLeft(int idTarget, String message) throws RemoteException {
@@ -93,15 +94,14 @@ public class VNode implements VNodeItf, Observer {
 				throw new Exception("Virtual Node not found");
 			else if (this.id != destinationVirtualID)
 			{
-				System.out.println("VNode " + id + " sends right.");
 				sendRight(messages.getRecentMessage());
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.err.println(e);
 		}
 		if (this.id == destinationVirtualID) {
-			System.out.println("Message received by " + id + " : " + msg);
+			System.out.println("Message received by VNode" + id + " : " + msg);
 		}
 	}
 

@@ -52,12 +52,12 @@ public class Node implements NodeItf {
 			}
 			d++;
 		}
-		System.out.println("\nSetup Node" + id + " done");
-		System.out.print("Keys " + id + " : ");
-		System.out.print(nodeToTransfer.keySet());
+		System.out.println("Setup Node" + id + " done");
+		System.out.print("Node to reach   : ");
+		System.out.println(nodeToTransfer.keySet());
 		
-		System.out.print("\nValues : ");
-		System.out.print(nodeToTransfer.values());
+		System.out.print("Node to send to : ");
+		System.out.println(nodeToTransfer.values());
 	}
 
 	public void sendStart(int idSender, int depth) throws RemoteException {

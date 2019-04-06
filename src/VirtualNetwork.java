@@ -15,10 +15,16 @@ public class VirtualNetwork {
 
     public void setup(ArrayList<Node> physicalNodes){
         // creating VirtualNodes and assign them to PhysicalNodes
-        System.out.println("creating VirtualNodes and assign them to PhysicalNodes");
+        System.out.println(" - - - - - - - - - - ");
+        System.out.println("Creating VirtualNodes and associate them to PhysicalNodes");
         int nodesID = 1;
         for (Node n : physicalNodes){
             this.nodes.add(new VNode(nodesID,n));
+            try {
+                System.out.println("VNode" + nodesID + " associated with PNode" + n.getId());
+            } catch (Exception e) {
+                System.err.println(e);
+            }
             nodesID++;
         }
 
@@ -33,6 +39,7 @@ public class VirtualNetwork {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+        System.out.println(" - - - - - - - - - - ");
     }
 
     public ArrayList<VNodeItf> getNodes() {
