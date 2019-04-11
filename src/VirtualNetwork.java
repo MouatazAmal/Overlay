@@ -16,7 +16,7 @@ public class VirtualNetwork {
     public void setup(ArrayList<Node> physicalNodes){
         // creating VirtualNodes and assign them to PhysicalNodes
         System.out.println(" - - - - - - - - - - ");
-        System.out.println("Creating VirtualNodes and associate them to PhysicalNodes");
+        System.out.println("Creating Virtual Network\n");
         int nodesID = 1;
         for (Node n : physicalNodes){
             this.nodes.add(new VNode(nodesID,n));
@@ -29,7 +29,6 @@ public class VirtualNetwork {
         }
 
         // Setting up Neighbours
-        System.out.println("Setting up Neighbours");
         try {
             for (int i = 1; i < this.nodes.size() - 1 ; i++ ){
                     this.nodes.get(i).setupNeighbours(this.nodes.get((i+1)%physicalNodes.size()),this.nodes.get((i-1)%physicalNodes.size()));
@@ -39,6 +38,9 @@ public class VirtualNetwork {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+        System.out.println("\nSetup done");
+        System.out.println(" - - - - - - - - - - ");
+        System.out.println("Network ready ! (enter command)");
         System.out.println(" - - - - - - - - - - ");
     }
 

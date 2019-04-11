@@ -45,6 +45,16 @@ public class PhysicalNetwork {
 				}
 			}
 			sc.close();
+			//Affichage du réseau
+			System.out.println(" - - - - - - - - - - ");
+			System.out.println("Network Overview\n");
+			for (int i = 0 ; i < nbNodes ; i++) {
+				System.out.print("Node " + nodes.get(i).getId() + " neighbours :");
+				for (int j = 0 ; j < nodes.get(i).getNeighbours().size() ; j++){
+					System.out.print(" " + nodes.get(i).getNeighbours().get(j).getId());
+				}
+				System.out.println();
+			}
 		} catch (Exception e) {
 			System.err.println("Error : " + e);
 		}
@@ -53,6 +63,7 @@ public class PhysicalNetwork {
 	private void setupRoutes() {
 		try {
 			System.out.println(" - - - - - - - - - - ");
+			System.out.println("Routing tables\n");
 			for (int i = 0 ; i < nbNodes ; i++) {
 				nodesItf.get(i).setup();
 				for (int j = 0 ; j < nbNodes ; j++) {

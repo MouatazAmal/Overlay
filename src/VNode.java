@@ -43,14 +43,6 @@ public class VNode implements VNodeItf, Observer {
 		physNode.send(right.getPhysNode().getId(), message);
 	}
 
-	public void sendLeft(int idTarget, String message) throws RemoteException {
-		if (idTarget == id) {
-			System.out.println("VNode" + id + " received : " + message);
-		} else {
-			physNode.send(this.left.getPhysNode().getId(),message);
-		}
-	}
-
 	public void setRight (VNodeItf right) throws RemoteException {
 		this.right = right;
 	}
